@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/bayazidsustami/bmkg-api/models"
 	"github.com/bayazidsustami/bmkg-api/service"
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,5 +17,18 @@ func New(service service.WeatherForecastService) WeatherForecastController {
 }
 
 func (w *WeatherForecastControllerImpl) GetForecastById(ctx *fiber.Ctx) error {
-	return w.Service.GetForecastById("1")
+	statusCode, weather, err := w.Service.GetForecastById("1")
+
+	if err != nil {
+		return ctx.JSON(models.ReponseError{
+			StatusCode: statusCode,
+			Message:    err.Error(),
+		})
+	}
+
+	return ctx.JSON(models.ReponseSuccessWithData{
+		StatusCode: statusCode,
+		Message:    "Success",
+		Data:       weather,
+	})
 }

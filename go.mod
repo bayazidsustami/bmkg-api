@@ -2,7 +2,10 @@ module github.com/bayazidsustami/bmkg-api
 
 go 1.21.3
 
-require github.com/gofiber/fiber/v2 v2.52.0
+require (
+	github.com/beevik/etree v1.3.0
+	github.com/gofiber/fiber/v2 v2.52.0
+)
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
