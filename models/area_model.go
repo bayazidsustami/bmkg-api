@@ -12,5 +12,5 @@ type Area struct {
 	Description string   `json:"description"`
 	Domain      string   `json:"domain"`
 	Tags        string   `json:"tags"`
-	Humidy      Humidity `json:"humidity"`
+	Humidity    Humidity `json:"humidity"`
 }

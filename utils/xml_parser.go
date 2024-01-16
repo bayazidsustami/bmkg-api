@@ -43,7 +43,7 @@ func getAreas(forecastField *etree.Element) []models.Area {
 			Description: getAttrString(element, "description"),
 			Domain:      getAttrString(element, "domain"),
 			Tags:        getAttrString(element, "tags"),
-			Humidy:      getHumidity(element),
+			Humidity:    getHumidity(element),
 			Name:        element.SelectElement("name").Text(),
 		}
 
@@ -77,7 +77,8 @@ func getHumidity(element *etree.Element) models.Humidity {
 }
 
 func findParameterById(element *etree.Element, key string) *etree.Element {
-	for _, e := range element.FindElements("//parameter[@id='hu']") {
+	param := "//parameter[@id='" + key + "']"
+	for _, e := range element.FindElements(param) {
 		id := e.SelectAttrValue("id", "")
 		if id == key {
 			return e
