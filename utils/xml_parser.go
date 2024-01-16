@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -31,6 +32,7 @@ func getAreas(forecastField *etree.Element) []models.Area {
 	var items []models.Area
 	for _, element := range forecastField.SelectElements("area") {
 		coordinate := strings.Replace(getAttrString(element, "coordinate"), " ", ",", -1)
+
 		itemArea := models.Area{
 			Id:          rune(getAttrInt(element, "id")),
 			Latitude:    getAttrFloat(element, "latitude"),
@@ -42,6 +44,8 @@ func getAreas(forecastField *etree.Element) []models.Area {
 			Description: getAttrString(element, "description"),
 			Domain:      getAttrString(element, "domain"),
 			Tags:        getAttrString(element, "tags"),
+			Humidy:      getHumidity(element),
+			Name:        element.SelectElement("name").Text(),
 		}
 
 		items = append(items, itemArea)
@@ -50,24 +54,38 @@ func getAreas(forecastField *etree.Element) []models.Area {
 	return items
 }
 
-func getIssues(issueField *etree.Element) models.Issue {
-	timestamp := getElementInt(issueField, "timestamp")
-	year := getElementInt(issueField, "year")
-	month := getElementInt(issueField, "month")
-	day := getElementInt(issueField, "day")
-	hour := getElementInt(issueField, "hour")
-	minute := getElementInt(issueField, "minute")
-	second := getElementInt(issueField, "second")
+func getHumidity(element *etree.Element) models.Humidity {
+	elementHummidity := findParameterById(element, "hu")
 
-	return models.Issue{
-		TimeStamp: int64(timestamp),
-		Year:      rune(year),
-		Month:     rune(month),
-		Day:       rune(day),
-		Hour:      rune(hour),
-		Minute:    rune(minute),
-		Second:    rune(second),
+	var humidityValues []models.HumidityValue
+	for _, e := range elementHummidity.SelectElements("timerange") {
+		valueElement := e.SelectElement("value")
+		humidityValue := models.HumidityValue{
+			Humidity: rune(getAttrInt(e, "h")),
+			DateTime: int64(getAttrInt(e, "datetime")),
+			Value:    rune(getElementInt(e, "value")),
+			Unit:     getAttrString(valueElement, "unit"),
+		}
+		fmt.Println(humidityValue)
+		humidityValues = append(humidityValues, humidityValue)
 	}
+
+	return models.Humidity{
+		Id:          getAttrString(elementHummidity, "id"),
+		Description: getAttrString(elementHummidity, "description"),
+		Type:        getAttrString(elementHummidity, "type"),
+		Data:        humidityValues,
+	}
+}
+
+func findParameterById(element *etree.Element, key string) *etree.Element {
+	for _, e := range element.FindElements("//parameter[@id='hu']") {
+		id := e.SelectAttrValue("id", "")
+		if id == key {
+			return e
+		}
+	}
+	return nil
 }
 
 func getElementInt(element *etree.Element, key string) int {
