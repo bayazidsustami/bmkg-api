@@ -24,6 +24,6 @@ type Area struct {
 	Region      string  `json:"region"`
 	Level       rune    `json:"level"`
 	Description string  `json:"description"`
-	Domain      string  `json:"string"`
+	Domain      string  `json:"domain"`
 	Tags        string  `json:"tags"`
 }
