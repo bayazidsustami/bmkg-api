@@ -2,6 +2,7 @@ package utils
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/bayazidsustami/bmkg-api/models"
 	"github.com/beevik/etree"
@@ -19,8 +20,8 @@ func ParseAllElement(response string) (*models.Weather, error) {
 	issueField := forecastField.SelectElement("issue")
 
 	data := models.Weather{
-		Issue: getIssues(issueField),
-		Areas: getAreas(forecastField),
+		TimeStamp: int64(getElementInt(issueField, "timestamp")),
+		Areas:     getAreas(forecastField),
 	}
 
 	return &data, nil
@@ -29,12 +30,12 @@ func ParseAllElement(response string) (*models.Weather, error) {
 func getAreas(forecastField *etree.Element) []models.Area {
 	var items []models.Area
 	for _, element := range forecastField.SelectElements("area") {
-
+		coordinate := strings.Replace(getAttrString(element, "coordinate"), " ", ",", -1)
 		itemArea := models.Area{
 			Id:          rune(getAttrInt(element, "id")),
 			Latitude:    getAttrFloat(element, "latitude"),
 			Longitude:   getAttrFloat(element, "longitude"),
-			Coordinate:  getAttrString(element, "coordinate"),
+			Coordinate:  coordinate,
 			Type:        getAttrString(element, "type"),
 			Region:      getAttrString(element, "region"),
 			Level:       rune(getAttrInt(element, "level")),

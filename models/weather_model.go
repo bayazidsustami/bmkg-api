@@ -1,8 +1,8 @@
 package models
 
 type Weather struct {
-	Issue Issue  `json:"issue"`
-	Areas []Area `json:"areas"`
+	TimeStamp int64  `json:"timestamp"`
+	Areas     []Area `json:"areas"`
 }
 
 type Issue struct {
