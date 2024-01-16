@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/bayazidsustami/bmkg-api/controller"
+	"github.com/bayazidsustami/bmkg-api/repository"
+	"github.com/bayazidsustami/bmkg-api/service"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,7 +18,9 @@ func main() {
 		Prefork:      true,
 	})
 
-	controller := controller.New()
+	repository := repository.New()
+	service := service.New(repository)
+	controller := controller.New(service)
 
 	app.Get("/api/forecast", controller.GetForecastById)
 

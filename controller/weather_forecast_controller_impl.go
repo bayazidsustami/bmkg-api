@@ -1,14 +1,20 @@
 package controller
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/bayazidsustami/bmkg-api/service"
+	"github.com/gofiber/fiber/v2"
+)
 
 type WeatherForecastControllerImpl struct {
+	Service service.WeatherForecastService
 }
 
-func New() WeatherForecastController {
-	return &WeatherForecastControllerImpl{}
+func New(service service.WeatherForecastService) WeatherForecastController {
+	return &WeatherForecastControllerImpl{
+		Service: service,
+	}
 }
 
 func (w *WeatherForecastControllerImpl) GetForecastById(ctx *fiber.Ctx) error {
-	return nil
+	return w.Service.GetForecastById("1")
 }
