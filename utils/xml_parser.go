@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -66,7 +65,6 @@ func getHumidity(element *etree.Element) models.Humidity {
 			Value:    rune(getElementInt(e, "value")),
 			Unit:     getAttrString(valueElement, "unit"),
 		}
-		fmt.Println(humidityValue)
 		humidityValues = append(humidityValues, humidityValue)
 	}
 
