@@ -17,7 +17,8 @@ func New(service service.WeatherForecastService) WeatherForecastController {
 }
 
 func (w *WeatherForecastControllerImpl) GetForecastById(ctx *fiber.Ctx) error {
-	statusCode, weather, err := w.Service.GetForecastById("1")
+	id := ctx.Params("provinceId")
+	statusCode, weather, err := w.Service.GetForecastById(id)
 
 	if err != nil {
 		return ctx.JSON(models.ReponseError{

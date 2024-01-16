@@ -21,7 +21,7 @@ func main() {
 	service := service.New(repository)
 	controller := controller.New(service)
 
-	app.Get("/api/forecast", controller.GetForecastById)
+	app.Get("/api/forecast/:provinceId", controller.GetForecastById)
 
 	err := app.Listen(":8000")
 	log.Fatal(err)
