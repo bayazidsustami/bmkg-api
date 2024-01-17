@@ -43,8 +43,10 @@ func getAreas(forecastField *etree.Element) []models.Area {
 			Description: getAttrString(element, "description"),
 			Domain:      getAttrString(element, "domain"),
 			Tags:        getAttrString(element, "tags"),
-			Humidity:    getHumidity(element),
-			Name:        element.SelectElement("name").Text(),
+			Parameter: models.Parameter{
+				Humidity: getHumidity(element),
+			},
+			Name: element.SelectElement("name").Text(),
 		}
 
 		items = append(items, itemArea)
