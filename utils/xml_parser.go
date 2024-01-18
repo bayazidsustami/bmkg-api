@@ -44,7 +44,8 @@ func getAreas(forecastField *etree.Element) []models.Area {
 			Domain:      getAttrString(element, "domain"),
 			Tags:        getAttrString(element, "tags"),
 			Parameter: models.Parameter{
-				Humidity: getHumidity(element),
+				Humidity:    getHumidity(element),
+				MaxHumidity: getMaxHumidity(element),
 			},
 			Name: element.SelectElement("name").Text(),
 		}
@@ -75,6 +76,28 @@ func getHumidity(element *etree.Element) models.Humidity {
 		Description: getAttrString(elementHummidity, "description"),
 		Type:        getAttrString(elementHummidity, "type"),
 		Data:        humidityValues,
+	}
+}
+
+func getMaxHumidity(element *etree.Element) models.MaxHumidity {
+	elementMaxHumidity := findParameterById(element, "humax")
+
+	var maxHumidityValues []models.MaxHumidityValue
+	for _, e := range elementMaxHumidity.SelectElements("timerange") {
+		valueElement := e.SelectElement("value")
+		maxHumidity := models.MaxHumidityValue{
+			Value:    rune(getElementInt(e, "value")),
+			Unit:     getAttrString(valueElement, "unit"),
+			DateTime: int64(getAttrInt(e, "datetime")),
+		}
+		maxHumidityValues = append(maxHumidityValues, maxHumidity)
+	}
+
+	return models.MaxHumidity{
+		Id:          getAttrString(elementMaxHumidity, "id"),
+		Description: getAttrString(elementMaxHumidity, "description"),
+		Type:        getAttrString(elementMaxHumidity, "type"),
+		Data:        maxHumidityValues,
 	}
 }
 
