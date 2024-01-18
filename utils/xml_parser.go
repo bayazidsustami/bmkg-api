@@ -46,6 +46,7 @@ func getAreas(forecastField *etree.Element) []models.Area {
 			Parameter: models.Parameter{
 				Humidity:    getHumidity(element),
 				MaxHumidity: getMaxHumidity(element),
+				MinHumidity: getMinHumidity(element),
 			},
 			Name: element.SelectElement("name").Text(),
 		}
@@ -79,13 +80,13 @@ func getHumidity(element *etree.Element) models.Humidity {
 	}
 }
 
-func getMaxHumidity(element *etree.Element) models.MaxHumidity {
+func getMaxHumidity(element *etree.Element) models.MinMaxHumidity {
 	elementMaxHumidity := findParameterById(element, "humax")
 
-	var maxHumidityValues []models.MaxHumidityValue
+	var maxHumidityValues []models.MinMaxHumidityValue
 	for _, e := range elementMaxHumidity.SelectElements("timerange") {
 		valueElement := e.SelectElement("value")
-		maxHumidity := models.MaxHumidityValue{
+		maxHumidity := models.MinMaxHumidityValue{
 			Value:    rune(getElementInt(e, "value")),
 			Unit:     getAttrString(valueElement, "unit"),
 			DateTime: int64(getAttrInt(e, "datetime")),
@@ -93,7 +94,29 @@ func getMaxHumidity(element *etree.Element) models.MaxHumidity {
 		maxHumidityValues = append(maxHumidityValues, maxHumidity)
 	}
 
-	return models.MaxHumidity{
+	return models.MinMaxHumidity{
+		Id:          getAttrString(elementMaxHumidity, "id"),
+		Description: getAttrString(elementMaxHumidity, "description"),
+		Type:        getAttrString(elementMaxHumidity, "type"),
+		Data:        maxHumidityValues,
+	}
+}
+
+func getMinHumidity(element *etree.Element) models.MinMaxHumidity {
+	elementMaxHumidity := findParameterById(element, "humin")
+
+	var maxHumidityValues []models.MinMaxHumidityValue
+	for _, e := range elementMaxHumidity.SelectElements("timerange") {
+		valueElement := e.SelectElement("value")
+		maxHumidity := models.MinMaxHumidityValue{
+			Value:    rune(getElementInt(e, "value")),
+			Unit:     getAttrString(valueElement, "unit"),
+			DateTime: int64(getAttrInt(e, "datetime")),
+		}
+		maxHumidityValues = append(maxHumidityValues, maxHumidity)
+	}
+
+	return models.MinMaxHumidity{
 		Id:          getAttrString(elementMaxHumidity, "id"),
 		Description: getAttrString(elementMaxHumidity, "description"),
 		Type:        getAttrString(elementMaxHumidity, "type"),
