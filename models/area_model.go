@@ -16,8 +16,10 @@ type Area struct {
 }
 
 type Parameter struct {
-	Humidity    Humidity       `json:"humidity"`
-	MinHumidity MinMaxHumidity `json:"min_humidity"`
-	MaxHumidity MinMaxHumidity `json:"max_humidity"`
-	Temperature Temperature    `json:"temperature"`
+	Humidity       Humidity          `json:"humidity"`
+	MinHumidity    MinMaxHumidity    `json:"min_humidity"`
+	MaxHumidity    MinMaxHumidity    `json:"max_humidity"`
+	Temperature    Temperature       `json:"temperature"`
+	MinTemperature MinMaxTemperature `json:"min_temperature"`
+	MaxTemperature MinMaxTemperature `json:"max_temperature"`
 }

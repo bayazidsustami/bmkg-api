@@ -44,10 +44,12 @@ func getAreas(forecastField *etree.Element) []models.Area {
 			Domain:      getAttrString(element, "domain"),
 			Tags:        getAttrString(element, "tags"),
 			Parameter: models.Parameter{
-				Humidity:    getHumidity(element),
-				MaxHumidity: getMaxHumidity(element),
-				MinHumidity: getMinHumidity(element),
-				Temperature: getTemperature(element),
+				Humidity:       getHumidity(element),
+				MaxHumidity:    getMaxHumidity(element),
+				MinHumidity:    getMinHumidity(element),
+				Temperature:    getTemperature(element),
+				MinTemperature: getMinTemperature(element),
+				MaxTemperature: getMaxTemperature(element),
 			},
 			Name: element.SelectElement("name").Text(),
 		}
@@ -78,30 +80,6 @@ func getHumidity(element *etree.Element) models.Humidity {
 		Description: getAttrString(elementHummidity, "description"),
 		Type:        getAttrString(elementHummidity, "type"),
 		Data:        humidityValues,
-	}
-}
-
-func getTemperature(element *etree.Element) models.Temperature {
-	elementTemp := findParameterById(element, "t")
-
-	var tempValues []models.TemperatureValue
-	for _, e := range elementTemp.SelectElements("timerange") {
-		valueElement := e.SelectElement("value")
-
-		tempValue := models.TemperatureValue{
-			Humidity: rune(getAttrInt(e, "h")),
-			DateTime: int64(getAttrInt(e, "datetime")),
-			Value:    rune(getElementInt(e, "value")),
-			Unit:     getAttrString(valueElement, "unit"),
-		}
-		tempValues = append(tempValues, tempValue)
-	}
-
-	return models.Temperature{
-		Id:          getAttrString(elementTemp, "id"),
-		Description: getAttrString(elementTemp, "description"),
-		Type:        getAttrString(elementTemp, "type"),
-		Data:        tempValues,
 	}
 }
 
@@ -146,6 +124,74 @@ func getMinHumidity(element *etree.Element) models.MinMaxHumidity {
 		Description: getAttrString(elementMaxHumidity, "description"),
 		Type:        getAttrString(elementMaxHumidity, "type"),
 		Data:        maxHumidityValues,
+	}
+}
+
+func getTemperature(element *etree.Element) models.Temperature {
+	elementTemp := findParameterById(element, "t")
+
+	var tempValues []models.TemperatureValue
+	for _, e := range elementTemp.SelectElements("timerange") {
+		valueElement := e.SelectElement("value")
+
+		tempValue := models.TemperatureValue{
+			Humidity: rune(getAttrInt(e, "h")),
+			DateTime: int64(getAttrInt(e, "datetime")),
+			Value:    rune(getElementInt(e, "value")),
+			Unit:     getAttrString(valueElement, "unit"),
+		}
+		tempValues = append(tempValues, tempValue)
+	}
+
+	return models.Temperature{
+		Id:          getAttrString(elementTemp, "id"),
+		Description: getAttrString(elementTemp, "description"),
+		Type:        getAttrString(elementTemp, "type"),
+		Data:        tempValues,
+	}
+}
+
+func getMaxTemperature(element *etree.Element) models.MinMaxTemperature {
+	elementMaxTemperature := findParameterById(element, "tmin")
+
+	var maxTemperatureValues []models.MinMaxTemperatureValue
+	for _, e := range elementMaxTemperature.SelectElements("timerange") {
+		valueElement := e.SelectElement("value")
+		maxTemperature := models.MinMaxTemperatureValue{
+			Value:    rune(getElementInt(e, "value")),
+			Unit:     getAttrString(valueElement, "unit"),
+			DateTime: int64(getAttrInt(e, "datetime")),
+		}
+		maxTemperatureValues = append(maxTemperatureValues, maxTemperature)
+	}
+
+	return models.MinMaxTemperature{
+		Id:          getAttrString(elementMaxTemperature, "id"),
+		Description: getAttrString(elementMaxTemperature, "description"),
+		Type:        getAttrString(elementMaxTemperature, "type"),
+		Data:        maxTemperatureValues,
+	}
+}
+
+func getMinTemperature(element *etree.Element) models.MinMaxTemperature {
+	elementMaxTemperature := findParameterById(element, "tmax")
+
+	var maxTemperatureValues []models.MinMaxTemperatureValue
+	for _, e := range elementMaxTemperature.SelectElements("timerange") {
+		valueElement := e.SelectElement("value")
+		maxTemperature := models.MinMaxTemperatureValue{
+			Value:    rune(getElementInt(e, "value")),
+			Unit:     getAttrString(valueElement, "unit"),
+			DateTime: int64(getAttrInt(e, "datetime")),
+		}
+		maxTemperatureValues = append(maxTemperatureValues, maxTemperature)
+	}
+
+	return models.MinMaxTemperature{
+		Id:          getAttrString(elementMaxTemperature, "id"),
+		Description: getAttrString(elementMaxTemperature, "description"),
+		Type:        getAttrString(elementMaxTemperature, "type"),
+		Data:        maxTemperatureValues,
 	}
 }
 
