@@ -8,7 +8,7 @@ type Humidity struct {
 }
 
 type HumidityValue struct {
-	Humidity rune   `json:"h"`
+	Humidity rune   `json:"hour"`
 	DateTime int64  `json:"datetime"`
 	Value    rune   `json:"value"`
 	Unit     string `json:"unit"`
