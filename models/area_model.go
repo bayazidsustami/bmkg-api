@@ -22,4 +22,5 @@ type Parameter struct {
 	Temperature    Temperature       `json:"temperature"`
 	MinTemperature MinMaxTemperature `json:"min_temperature"`
 	MaxTemperature MinMaxTemperature `json:"max_temperature"`
+	Weather        WeatherValue      `json:"weather"`
 }

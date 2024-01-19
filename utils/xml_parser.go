@@ -50,6 +50,7 @@ func getAreas(forecastField *etree.Element) []models.Area {
 				Temperature:    getTemperature(element),
 				MinTemperature: getMinTemperature(element),
 				MaxTemperature: getMaxTemperature(element),
+				Weather:        getWeather(element),
 			},
 			Name: element.SelectElement("name").Text(),
 		}
@@ -80,6 +81,27 @@ func getHumidity(element *etree.Element) models.Humidity {
 		Description: getAttrString(elementHummidity, "description"),
 		Type:        getAttrString(elementHummidity, "type"),
 		Data:        humidityValues,
+	}
+}
+
+func getWeather(element *etree.Element) models.WeatherValue {
+	elementWeather := findParameterById(element, "weather")
+
+	var weatherValues []models.WeatherValues
+	for _, e := range elementWeather.SelectElements("timerange") {
+		weather := models.WeatherValues{
+			Icon:     rune(getElementInt(e, "value")),
+			DateTime: int64(getAttrInt(e, "datetime")),
+		}
+		weather.SetDescription()
+		weatherValues = append(weatherValues, weather)
+	}
+
+	return models.WeatherValue{
+		Id:          getAttrString(elementWeather, "id"),
+		Description: getAttrString(elementWeather, "description"),
+		Type:        getAttrString(elementWeather, "type"),
+		Data:        weatherValues,
 	}
 }
 
