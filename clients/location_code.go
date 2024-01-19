@@ -1,6 +1,6 @@
 package clients
 
-var LocationKey = map[string]string{
+var LocationCode = map[string]string{
 	"1":  "Aceh",
 	"2":  "Bali",
 	"3":  "BangkaBelitung",
@@ -42,5 +42,5 @@ const BMKG_URL = "https://data.bmkg.go.id/"
 const path = BMKG_URL + "/DataMKG/MEWS/DigitalForecast/DigitalForecast-"
 
 func GetPath(key string) string {
-	return path + LocationKey[key] + ".xml"
+	return path + LocationCode[key] + ".xml"
 }
