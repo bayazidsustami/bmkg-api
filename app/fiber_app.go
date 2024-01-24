@@ -2,16 +2,16 @@ package app
 
 import (
 	"log"
-	"time"
 
+	"github.com/bayazidsustami/bmkg-api/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 func StartFiberApp() {
 	app := fiber.New(fiber.Config{
-		IdleTimeout:  time.Second * 5,
-		WriteTimeout: time.Second * 5,
-		ReadTimeout:  time.Second * 5,
+		IdleTimeout:  utils.IdleTimeout,
+		WriteTimeout: utils.WriteTimeout,
+		ReadTimeout:  utils.ReadTimeout,
 	})
 
 	RegisterRoute(app)
