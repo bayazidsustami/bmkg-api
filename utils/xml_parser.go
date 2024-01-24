@@ -52,6 +52,7 @@ func getAreas(forecastField *etree.Element) []models.Area {
 				MaxTemperature: getMaxTemperature(element),
 				Weather:        getWeather(element),
 				WindSpeed:      getWindSpeed(element),
+				WindDirection:  getWindDirection(element),
 			},
 			Name: element.SelectElement("name").Text(),
 		}
@@ -243,6 +244,31 @@ func getWindSpeed(element *etree.Element) models.WindSpeed {
 	}
 }
 
+func getWindDirection(element *etree.Element) models.WindDirection {
+	elementWindDirection := findParameterById(element, "wd")
+	var windDirectionValues []models.WindDirectionValue
+	for _, e := range elementWindDirection.SelectElements("timerange") {
+		valueElements := e.SelectElements("value")
+		values := make(map[string]any, len(valueElements))
+		for _, valueElement := range valueElements {
+			values[getAttrString(valueElement, "unit")] = convertStringToNumbers(valueElement.Text())
+		}
+		windDirectionValue := models.WindDirectionValue{
+			Hour:     rune(getAttrInt(e, "h")),
+			DateTime: int64(getAttrInt(e, "datetime")),
+			Values:   values,
+		}
+		windDirectionValues = append(windDirectionValues, windDirectionValue)
+	}
+
+	return models.WindDirection{
+		Id:          getAttrString(elementWindDirection, "id"),
+		Description: getAttrString(elementWindDirection, "description"),
+		Type:        getAttrString(elementWindDirection, "type"),
+		Data:        windDirectionValues,
+	}
+}
+
 func findParameterById(element *etree.Element, key string) *etree.Element {
 	param := "//parameter[@id='" + key + "']"
 	for _, e := range element.FindElements(param) {
@@ -276,13 +302,13 @@ func getAttrString(element *etree.Element, key string) string {
 }
 
 func convertStringToNumbers(value string) any {
-	intValue, err := strconv.Atoi(value)
-	if err != nil {
-		f, err := strconv.ParseFloat(value, 32)
-		if err != nil {
-			panic(err)
-		}
-		return f
+	if num, err := strconv.Atoi(value); err == nil {
+		return num
 	}
-	return intValue
+
+	if num, err := strconv.ParseFloat(value, 64); err == nil {
+		return num
+	}
+
+	return value
 }
