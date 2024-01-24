@@ -278,7 +278,10 @@ func getAttrString(element *etree.Element, key string) string {
 func convertStringToNumbers(value string) any {
 	intValue, err := strconv.Atoi(value)
 	if err != nil {
-		f, _ := strconv.ParseFloat(value, 32)
+		f, err := strconv.ParseFloat(value, 32)
+		if err != nil {
+			panic(err)
+		}
 		return f
 	}
 	return intValue
