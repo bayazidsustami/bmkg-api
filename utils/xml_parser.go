@@ -51,6 +51,7 @@ func getAreas(forecastField *etree.Element) []models.Area {
 				MinTemperature: getMinTemperature(element),
 				MaxTemperature: getMaxTemperature(element),
 				Weather:        getWeather(element),
+				WindSpeed:      getWindSpeed(element),
 			},
 			Name: element.SelectElement("name").Text(),
 		}
@@ -217,6 +218,31 @@ func getMinTemperature(element *etree.Element) models.MinMaxTemperature {
 	}
 }
 
+func getWindSpeed(element *etree.Element) models.WindSpeed {
+	elementWindSpeed := findParameterById(element, "ws")
+	var windSpeedValues []models.WindSpeedValue
+	for _, e := range elementWindSpeed.SelectElements("timerange") {
+		valueElements := e.SelectElements("value")
+		values := make(map[string]any, len(valueElements))
+		for _, valueElement := range valueElements {
+			values[getAttrString(valueElement, "unit")] = convertStringToNumbers(valueElement.Text())
+		}
+		windSpeedValue := models.WindSpeedValue{
+			Hour:     rune(getAttrInt(e, "h")),
+			DateTime: int64(getAttrInt(e, "datetime")),
+			Values:   values,
+		}
+		windSpeedValues = append(windSpeedValues, windSpeedValue)
+	}
+
+	return models.WindSpeed{
+		Id:          getAttrString(elementWindSpeed, "id"),
+		Description: getAttrString(elementWindSpeed, "description"),
+		Type:        getAttrString(elementWindSpeed, "type"),
+		Data:        windSpeedValues,
+	}
+}
+
 func findParameterById(element *etree.Element, key string) *etree.Element {
 	param := "//parameter[@id='" + key + "']"
 	for _, e := range element.FindElements(param) {
@@ -247,4 +273,13 @@ func getAttrFloat(element *etree.Element, key string) float64 {
 
 func getAttrString(element *etree.Element, key string) string {
 	return element.SelectAttrValue(key, "")
+}
+
+func convertStringToNumbers(value string) any {
+	intValue, err := strconv.Atoi(value)
+	if err != nil {
+		f, _ := strconv.ParseFloat(value, 32)
+		return f
+	}
+	return intValue
 }
