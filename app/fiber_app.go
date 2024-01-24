@@ -5,6 +5,7 @@ import (
 
 	"github.com/bayazidsustami/bmkg-api/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/spf13/viper"
 )
 
 func StartFiberApp() {
@@ -16,6 +17,16 @@ func StartFiberApp() {
 
 	RegisterRoute(app)
 
-	err := app.Listen(":8000")
+	config := viper.New()
+	config.SetConfigName("config")
+	config.SetConfigType("env")
+	config.AddConfigPath("config/")
+
+	err := config.ReadInConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = app.Listen(config.GetString("APP_HOST") + ":" + config.GetString("APP_PORT"))
 	log.Fatal(err)
 }
