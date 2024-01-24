@@ -12,5 +12,6 @@ func RegisterRoute(app *fiber.App) {
 	service := service.New(repository)
 	controller := controller.New(service)
 
-	app.Get("/api/forecast/:provinceId", controller.GetForecastById)
+	app.Get("/api/weather/:provinceId", controller.GetForecastById)
+	app.Get("/api/weather", controller.GetForecastCities)
 }
