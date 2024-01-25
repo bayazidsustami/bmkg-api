@@ -3,24 +3,23 @@ package app
 import (
 	"log"
 
-	"github.com/bayazidsustami/bmkg-api/utils"
+	"github.com/bayazidsustami/bmkg-api/config"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
 )
 
 func StartFiberApp() {
 	app := fiber.New(fiber.Config{
-		IdleTimeout:  utils.IdleTimeout,
-		WriteTimeout: utils.WriteTimeout,
-		ReadTimeout:  utils.ReadTimeout,
+		IdleTimeout:  config.IdleTimeout,
+		WriteTimeout: config.WriteTimeout,
+		ReadTimeout:  config.ReadTimeout,
 	})
 
 	RegisterRoute(app)
 
 	config := viper.New()
-	config.SetConfigName("config")
-	config.SetConfigType("env")
-	config.AddConfigPath("config/")
+	config.SetConfigFile(".env")
+	config.AddConfigPath(".")
 
 	err := config.ReadInConfig()
 	if err != nil {

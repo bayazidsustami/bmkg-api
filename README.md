@@ -45,7 +45,7 @@ This API provides a simple and efficient way to access weather forecasts for all
    cd bmkg-api  
 2. Install the dependencies
     ```go mod download```
-3. Open file `/config/config.env` and adjust desired host and port
+3. Open file `.env` and adjust desired host and port
  
 ## Usage
 1. Run The Application :
