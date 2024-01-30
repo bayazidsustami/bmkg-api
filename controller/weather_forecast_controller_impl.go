@@ -50,3 +50,22 @@ func (w *WeatherForecastControllerImpl) GetForecastCities(ctx *fiber.Ctx) error 
 		Data:       weather,
 	})
 }
+
+func (w *WeatherForecastControllerImpl) GetForecastByCity(ctx *fiber.Ctx) error {
+	id := ctx.Params("provinceId")
+	cityId := ctx.Params("cityId")
+	statusCode, weather, err := w.Service.GetForecastByCity(id, cityId)
+
+	if err != nil {
+		return ctx.JSON(models.ReponseError{
+			StatusCode: statusCode,
+			Message:    err.Error(),
+		})
+	}
+
+	return ctx.JSON(models.ReponseSuccessWithData{
+		StatusCode: statusCode,
+		Message:    "Success",
+		Data:       weather,
+	})
+}
