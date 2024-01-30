@@ -27,6 +27,25 @@ func ParseAllElement(response string) (*models.Weather, error) {
 	return &data, nil
 }
 
+func ParseSingleElement(response string, cityId string) (*models.SingleWeather, error) {
+	doc := etree.NewDocument()
+	err := doc.ReadFromString(response)
+	if err != nil {
+		return nil, err
+	}
+
+	root := doc.SelectElement("data")
+	forecastField := root.SelectElement("forecast")
+	issueField := forecastField.SelectElement("issue")
+
+	data := models.SingleWeather{
+		TimeStamp: int64(getElementInt(issueField, "timestamp")),
+		Areas:     getArea(forecastField, cityId),
+	}
+
+	return &data, nil
+}
+
 func getAreas(forecastField *etree.Element) []models.Area {
 	var items []models.Area
 	for _, element := range forecastField.SelectElements("area") {
@@ -61,6 +80,38 @@ func getAreas(forecastField *etree.Element) []models.Area {
 	}
 
 	return items
+}
+
+func getArea(forecastField *etree.Element, cityId string) models.Area {
+	element := findAreaElementById(forecastField, cityId)
+	coordinate := strings.Replace(getAttrString(element, "coordinate"), " ", ",", -1)
+
+	itemArea := models.Area{
+		Id:          rune(getAttrInt(element, "id")),
+		Latitude:    getAttrFloat(element, "latitude"),
+		Longitude:   getAttrFloat(element, "longitude"),
+		Coordinate:  coordinate,
+		Type:        getAttrString(element, "type"),
+		Region:      getAttrString(element, "region"),
+		Level:       rune(getAttrInt(element, "level")),
+		Description: getAttrString(element, "description"),
+		Domain:      getAttrString(element, "domain"),
+		Tags:        getAttrString(element, "tags"),
+		Parameter: models.Parameter{
+			Humidity:       getHumidity(element),
+			MaxHumidity:    getMaxHumidity(element),
+			MinHumidity:    getMinHumidity(element),
+			Temperature:    getTemperature(element),
+			MinTemperature: getMinTemperature(element),
+			MaxTemperature: getMaxTemperature(element),
+			Weather:        getWeather(element),
+			WindSpeed:      getWindSpeed(element),
+			WindDirection:  getWindDirection(element),
+		},
+		Name: element.SelectElement("name").Text(),
+	}
+
+	return itemArea
 }
 
 func getHumidity(element *etree.Element) models.Humidity {
@@ -274,6 +325,17 @@ func findParameterById(element *etree.Element, key string) *etree.Element {
 	for _, e := range element.FindElements(param) {
 		id := e.SelectAttrValue("id", "")
 		if id == key {
+			return e
+		}
+	}
+	return nil
+}
+
+func findAreaElementById(element *etree.Element, cityId string) *etree.Element {
+	param := "//area[@id='" + cityId + "']"
+	for _, e := range element.FindElements(param) {
+		id := e.SelectAttrValue("id", "")
+		if id == cityId {
 			return e
 		}
 	}

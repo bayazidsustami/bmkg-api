@@ -14,4 +14,5 @@ func RegisterRoute(app *fiber.App) {
 
 	app.Get("/api/weather/provinces/:provinceId", controller.GetForecastById)
 	app.Get("/api/weather/provinces", controller.GetForecastCities)
+	app.Get("/api/weather/provinces/:provinceId/cities/:cityId", controller.GetForecastByCity)
 }
