@@ -37,7 +37,11 @@ func (service *WeatherForecastServiceImpl) GetForecastByCity(id string, cityId s
 	}
 	weather, err := utils.ParseSingleElement(response, cityId)
 	if err != nil {
-		return http.StatusInternalServerError, nil, err
+		if err.Error() == "city not found" {
+			return http.StatusNotFound, nil, err
+		} else {
+			return http.StatusInternalServerError, nil, err
+		}
 	}
 	return code, weather, nil
 }

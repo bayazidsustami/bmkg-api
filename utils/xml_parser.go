@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 
@@ -38,9 +39,13 @@ func ParseSingleElement(response string, cityId string) (*models.SingleWeather, 
 	forecastField := root.SelectElement("forecast")
 	issueField := forecastField.SelectElement("issue")
 
+	areaData, err := getArea(forecastField, cityId)
+	if err != nil {
+		return nil, err
+	}
 	data := models.SingleWeather{
 		TimeStamp: int64(getElementInt(issueField, "timestamp")),
-		Areas:     getArea(forecastField, cityId),
+		Areas:     areaData,
 	}
 
 	return &data, nil
@@ -82,8 +87,11 @@ func getAreas(forecastField *etree.Element) []models.Area {
 	return items
 }
 
-func getArea(forecastField *etree.Element, cityId string) models.Area {
+func getArea(forecastField *etree.Element, cityId string) (models.Area, error) {
 	element := findAreaElementById(forecastField, cityId)
+	if element == nil {
+		return models.Area{}, errors.New("city not found")
+	}
 	coordinate := strings.Replace(getAttrString(element, "coordinate"), " ", ",", -1)
 
 	itemArea := models.Area{
@@ -111,7 +119,7 @@ func getArea(forecastField *etree.Element, cityId string) models.Area {
 		Name: element.SelectElement("name").Text(),
 	}
 
-	return itemArea
+	return itemArea, nil
 }
 
 func getHumidity(element *etree.Element) models.Humidity {
