@@ -58,6 +58,8 @@ This API provides a simple and efficient way to access weather forecasts for all
 ## Api Endpoints
 - GET `/api/weather/provinces`: Get weather forecasts for all provinces.
 - GET `/api/weather/provinces/{provinceId}`: Get weather forecast for a specific province.
+- GET `/api/weather/provinces/{provinceId}/cities`: Get all cities weather forecast for a specific province.
+- GET `/api/weather/provinces/{provinceId}/cities/{cityId}`: Get weather forecast for a specific city in province
 
 ### List Province
 | Province ID | Province |
