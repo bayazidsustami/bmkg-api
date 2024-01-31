@@ -17,12 +17,20 @@ func ParseAllElement(response string) (*models.Weather, error) {
 	}
 
 	root := doc.SelectElement("data")
+	source := getAttrString(root, "source")
+	productionCenter := getAttrString(root, "productionCenter")
+
 	forecastField := root.SelectElement("forecast")
+	domain := getAttrString(forecastField, "domain")
+
 	issueField := forecastField.SelectElement("issue")
 
 	data := models.Weather{
-		TimeStamp: int64(getElementInt(issueField, "timestamp")),
-		Areas:     getAreas(forecastField),
+		TimeStamp:        int64(getElementInt(issueField, "timestamp")),
+		Source:           source,
+		ProductionCenter: productionCenter,
+		Domain:           domain,
+		Areas:            getAreas(forecastField),
 	}
 
 	return &data, nil
@@ -36,7 +44,12 @@ func ParseSingleElement(response string, cityId string) (*models.SingleWeather, 
 	}
 
 	root := doc.SelectElement("data")
+	source := getAttrString(root, "source")
+	productionCenter := getAttrString(root, "productionCenter")
+
 	forecastField := root.SelectElement("forecast")
+	domain := getAttrString(forecastField, "domain")
+
 	issueField := forecastField.SelectElement("issue")
 
 	areaData, err := getArea(forecastField, cityId)
@@ -44,8 +57,11 @@ func ParseSingleElement(response string, cityId string) (*models.SingleWeather, 
 		return nil, err
 	}
 	data := models.SingleWeather{
-		TimeStamp: int64(getElementInt(issueField, "timestamp")),
-		Areas:     areaData,
+		TimeStamp:        int64(getElementInt(issueField, "timestamp")),
+		Source:           source,
+		ProductionCenter: productionCenter,
+		Domain:           domain,
+		Areas:            areaData,
 	}
 
 	return &data, nil
