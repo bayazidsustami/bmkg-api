@@ -18,7 +18,7 @@ func ParseAllElement(response string) (*models.Weather, error) {
 
 	root := doc.SelectElement("data")
 	source := getAttrString(root, "source")
-	productionCenter := getAttrString(root, "productionCenter")
+	productionCenter := getAttrString(root, "productioncenter")
 
 	forecastField := root.SelectElement("forecast")
 	domain := getAttrString(forecastField, "domain")
@@ -45,7 +45,7 @@ func ParseSingleElement(response string, cityId string) (*models.SingleWeather, 
 
 	root := doc.SelectElement("data")
 	source := getAttrString(root, "source")
-	productionCenter := getAttrString(root, "productionCenter")
+	productionCenter := getAttrString(root, "productioncenter")
 
 	forecastField := root.SelectElement("forecast")
 	domain := getAttrString(forecastField, "domain")
