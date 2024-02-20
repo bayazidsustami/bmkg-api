@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/bayazidsustami/bmkg-api/models"
 	"github.com/bayazidsustami/bmkg-api/service"
 	"github.com/gofiber/fiber/v2"
@@ -18,6 +21,13 @@ func New(service service.WeatherForecastService) WeatherForecastController {
 
 func (w *WeatherForecastControllerImpl) GetForecastById(ctx *fiber.Ctx) error {
 	id := ctx.Params("provinceId")
+	cityIdInt, _ := strconv.Atoi(id)
+
+	responseErr := checkProvinceIdInvalid(cityIdInt)
+	if responseErr != nil {
+		return ctx.JSON(responseErr)
+	}
+
 	statusCode, weather, err := w.Service.GetForecastById(id)
 
 	if err != nil {
@@ -53,6 +63,13 @@ func (w *WeatherForecastControllerImpl) GetForecastCities(ctx *fiber.Ctx) error 
 
 func (w *WeatherForecastControllerImpl) GetForecastByCity(ctx *fiber.Ctx) error {
 	id := ctx.Params("provinceId")
+	cityIdInt, _ := strconv.Atoi(id)
+
+	responseErr := checkProvinceIdInvalid(cityIdInt)
+	if responseErr != nil {
+		return ctx.JSON(responseErr)
+	}
+
 	cityId := ctx.Params("cityId")
 	statusCode, weather, err := w.Service.GetForecastByCity(id, cityId)
 
@@ -68,4 +85,14 @@ func (w *WeatherForecastControllerImpl) GetForecastByCity(ctx *fiber.Ctx) error 
 		Message:    "Success",
 		Data:       weather,
 	})
+}
+
+func checkProvinceIdInvalid(id int) *models.ReponseError {
+	if id > 35 {
+		return &models.ReponseError{
+			StatusCode: http.StatusNotFound,
+			Message:    "Not Found for Province ID : " + strconv.Itoa(id),
+		}
+	}
+	return nil
 }
