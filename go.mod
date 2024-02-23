@@ -4,7 +4,7 @@ go 1.21.3
 
 require (
 	github.com/beevik/etree v1.3.0
-	github.com/gofiber/fiber/v2 v2.52.0
+	github.com/gofiber/fiber/v2 v2.52.1
 	github.com/spf13/viper v1.18.2
 )
 
