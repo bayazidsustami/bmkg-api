@@ -17,7 +17,7 @@ WORKDIR /app
 COPY --from=builder /app/bmkg_api .
 COPY .env .
 
-EXPOSE 8001
+EXPOSE 8000
 
 # Run the application
 CMD ["./bmkg_api"]
